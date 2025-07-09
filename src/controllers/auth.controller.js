@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const { generateToken } = require("../utils/jwt.util");
 const { hashPassword, comparePassword } = require("../utils/bcrypt.util");
+const { revokeToken } = require("../utils/jwt.util");
 
 const prisma = new PrismaClient();
 
@@ -140,7 +141,6 @@ const login = async (req, res) => {
 // @desc    Logout user / clear cookie
 // @route   POST /api/auth/logout
 // @access  Private
-const { revokeToken } = require("../utils/jwt.util");
 
 const logout = async (req, res) => {
   const token = req.cookies.token;

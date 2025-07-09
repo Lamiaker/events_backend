@@ -8,7 +8,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
-
+const adminRoutes = require('./routes/admin.routes');
 const app = express();
 
 // 1. Middleware de sécurité de base
@@ -94,17 +94,15 @@ app.use(
 
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());
-
 // 6. Protection contre les injections NoSQL et nettoyage des données
-app.use(
-  mongoSanitize({
-    replaceWith: "_",
-    onSanitize: ({ req, key }) => {
-      console.warn(`Sanitized ${key} in request ${req.method} ${req.path}`);
-    },
-  })
-);
-
+// app.use(
+//   mongoSanitize({
+//     replaceWith: "_",
+//     onSanitize: ({ req, key }) => {
+//       console.warn(`Sanitized ${key} in request ${req.method} ${req.path}`);
+//     },
+//   })
+// );
 // 7. Headers de sécurité supplémentaires
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -119,10 +117,14 @@ app.use((req, res, next) => {
   res.setHeader("Expect-CT", "max-age=0");
   next();
 });
-
+app.use(express.json());
 // 8. Routes
+
+
+// Après les autres middlewares
+app.use('/api/admin', adminRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+// app.use("/api/users", userRoutes);
 
 // 9. Route de santé pour les checks
 app.get("/health", (req, res) => {
